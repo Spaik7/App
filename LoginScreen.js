@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'reac
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true);  // State to toggle between Login and Create Account
+  const [isLogin, setIsLogin] = useState(true); // State to toggle between Login and Create Account
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -15,19 +15,26 @@ export default function LoginScreen({ navigation }) {
     const hardcodedEmail = 'A@a';
     const hardcodedPassword = '1234';
 
-    if (email === hardcodedEmail && password === hardcodedPassword) {
-      console.log('Login successful');
-      Alert.alert('Success', 'Login successful');
-      navigation.navigate('HomeScreen');  // Navigate to the HomeScreen
+    if (isLogin) {
+      // Handle login
+      if (email === hardcodedEmail && password === hardcodedPassword) {
+        console.log('Login successful');
+        navigation.navigate('HomeScreen'); // Navigate to the HomeScreen
+      } else {
+        console.log('Invalid email or password');
+        Alert.alert('Error', 'Invalid email or password');
+      }
     } else {
-      console.log('Invalid email or password');
-      Alert.alert('Error', 'Invalid email or password');
+      // Navigate to the SignupScreen for account creation
+      console.log('Navigating to Signup Screen');
+      navigation.navigate('QuizScreen'); // Make sure you have this screen defined
+      navigation.navigate('QuizScreen', { email, password });
     }
   };
 
   return (
     <View style={styles.containerLoginText}>
-      <Text>Welcome to the [name], {isLogin ? 'login' : 'create an account'}</Text>
+      <Text>Welcome to Coopernico, please {isLogin ? 'login' : 'create an account'}</Text>
 
       <View style={styles.Login}>
         <Text style={styles.loginText}>{isLogin ? 'Login' : 'Create Account'}</Text>
@@ -38,7 +45,7 @@ export default function LoginScreen({ navigation }) {
             style={styles.inputEmail}
             placeholder="E-mail"
             value={email}
-            onChangeText={setEmail}  // Update email state
+            onChangeText={setEmail} // Update email state
           />
         </View>
 
@@ -47,9 +54,9 @@ export default function LoginScreen({ navigation }) {
           <TextInput
             style={styles.input}
             placeholder="Password"
-            secureTextEntry  // Make the password input hidden
+            secureTextEntry // Make the password input hidden
             value={password}
-            onChangeText={setPassword}  // Update password state
+            onChangeText={setPassword} // Update password state
           />
         </View>
 
