@@ -10,7 +10,7 @@ export default function LoginScreen({ navigation }) {
     setIsLogin(!isLogin);
   };
 
-  const handleEnterPress = () => {
+  const handleEnterPress = async () => {
     // Hardcoded credentials for testing
     const hardcodedEmail = 'A@a';
     const hardcodedPassword = '1234';
@@ -18,8 +18,23 @@ export default function LoginScreen({ navigation }) {
     if (isLogin) {
       // Handle login
       if (email === hardcodedEmail && password === hardcodedPassword) {
-        console.log('Login successful');
-        navigation.navigate('HomeScreen'); // Navigate to the HomeScreen
+        //try {
+          // Simulate fetching user data (name in this case) from the server
+          //const response = await fetch(`https://yourapi.com/userData?email=${email}&password=${password}`);
+          //const data = await response.json();
+
+          // Assuming data includes the 'name' field
+          // const { name } = data; in production
+          //for testing: 
+          const name = 'Dany'; // This is correct for testing
+
+          console.log('Login successful');
+          // Pass the name to the HomeScreen
+          navigation.navigate('HomeScreen', { name });
+        /*} catch (error) {
+          console.log('Error fetching user data:', error);
+          Alert.alert('Error', 'Failed to retrieve user data');
+        }*/
       } else {
         console.log('Invalid email or password');
         Alert.alert('Error', 'Invalid email or password');
@@ -27,7 +42,6 @@ export default function LoginScreen({ navigation }) {
     } else {
       // Navigate to the SignupScreen for account creation
       console.log('Navigating to Signup Screen');
-      navigation.navigate('QuizScreen'); // Make sure you have this screen defined
       navigation.navigate('QuizScreen', { email, password });
     }
   };
