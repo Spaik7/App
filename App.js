@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native'; // Import TouchableOpacity
-import Icon from 'react-native-vector-icons/Ionicons';  // Importing Ionicons
-import LoginScreen from './LoginScreen';  // Login screen
-import ForgotPasswordScreen from './ForgotPasswordScreen';  // Forgot password screen
-import HomeScreen from './HomeScreen';  // Home screen
-import AccountScreen from './AccountScreen';  // Account screen
-import QuizScreen from './QuizScreen';  // Quiz screen
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Modal from 'react-native-modal';
+import LoginScreen from './LoginScreen';
+import ForgotPasswordScreen from './ForgotPasswordScreen';
+import HomeScreen from './HomeScreen';
+import AccountScreen from './AccountScreen';
+import QuizScreen from './QuizScreen';
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [currentNavigation, setCurrentNavigation] = useState(null); // Store the current navigation
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const handleLogout = () => {
+    toggleModal();
+    Alert.alert('Logged out', 'You have been logged out successfully.');
+    if (currentNavigation) {
+      currentNavigation.navigate('Login'); // Use the stored navigation
+    }
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
@@ -30,31 +46,35 @@ export default function App() {
         <Stack.Screen
           name="HomeScreen"
           component={HomeScreen}
-          options={({ route, navigation }) => ({
-            headerTitle: `Welcome back to Coopernico, ${route.params?.name || ''}`,
-            gestureEnabled: true,
-            headerTitleStyle: { fontSize: 16 },  // Set a smaller font size for the title
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                <Icon
-                  name="menu"  // Burger menu icon
-                  size={25}
-                  color="#333"
-                  style={{ marginLeft: 15 }}  // Add margin to the left
-                />
-              </TouchableOpacity>
-            ),
-            headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate('AccountScreen')}>
-                <Icon
-                  name="person"  // Person icon for the account
-                  size={25}
-                  color="#333"
-                  style={{ marginRight: 15 }}  // Add margin to the right
-                />
-              </TouchableOpacity>
-            ),
-          })}
+          options={({ navigation }) => {
+            setCurrentNavigation(navigation); // Store the navigation prop
+
+            return {
+              headerTitle: 'Welcome back to Coopernico',
+              gestureEnabled: true,
+              headerTitleStyle: { fontSize: 16 },
+              headerLeft: () => (
+                <TouchableOpacity onPress={toggleModal}>
+                  <Icon
+                    name="menu"
+                    size={25}
+                    color="#333"
+                    style={{ marginLeft: 15 }}
+                  />
+                </TouchableOpacity>
+              ),
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('AccountScreen')}>
+                  <Icon
+                    name="person"
+                    size={25}
+                    color="#333"
+                    style={{ marginRight: 15 }}
+                  />
+                </TouchableOpacity>
+              ),
+            };
+          }}
         />
 
         <Stack.Screen
@@ -69,6 +89,33 @@ export default function App() {
           options={{ title: 'Welcome to Coopernico', headerShown: true }}
         />
       </Stack.Navigator>
+
+      <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
+        <View style={styles.sidebar}>
+          <Text style={styles.sidebarTitle}>Menu</Text>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={styles.sidebarItem}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  sidebar: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  sidebarItem: {
+    fontSize: 18,
+    paddingVertical: 10,
+    color: 'red',
+  },
+});
